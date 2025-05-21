@@ -4,14 +4,14 @@ addpath Data
 addpath Utilities
 %% 傅里叶变换
 % 读取无噪原图像及其居中对数傅里叶谱
-I = imread('47_GT.png');
+I = imread('06_GT.png');
 frequency_I = fft2(I);
 frequency_I = fftshift(frequency_I);
 amplitude_I = abs(frequency_I);
 logAmplitude_I = log(amplitude_I+1);
 
 % 读取噪声图像及频率矩阵并使坐标系原点中心化
-I_noisy = imread('47_noisy.png');
+I_noisy = imread('06_noisy.png');
 frequency_I_noisy = fft2(I_noisy);
 frequency_I_noisy = fftshift(frequency_I_noisy);
 
@@ -29,28 +29,28 @@ mouse_track()
 % ****************************** 请同学们在此补全函数 *************************************
 % ********找到6个最佳滤波点位坐标，并把下列陷波滤波器函数参数中的“*”换成对应点位坐标********
 % ************例如，找到的点位坐标为x=1,y=2，则Hk = notch_filter(I_noisy,1,2);*************
-% H1 = notch_filter(I_noisy,#,#);
-% H1 = notch_filter(I_noisy,#,#);
-% H1 = notch_filter(I_noisy,#,#);
-% H1 = notch_filter(I_noisy,#,#);
-% H5 = notch_filter(I_noisy,#,#);
-% H6 = notch_filter(I_noisy,#,#);
-% H = H1.*H2.*H3.*H4.*H5.*H6;
+%H1 = notch_filter(I_noisy,56,-100);
+%H2 = notch_filter(I_noisy,57,-36);
+%H3 = notch_filter(I_noisy,-59,-31);
+%H4 = notch_filter(I_noisy,1,-63);
+%H5 = notch_filter(I_noisy,-3,-124);
+%H6 = notch_filter(I_noisy,-57,-88);
+%H = H1.*H2.*H3.*H4.*H5.*H6;
 
 %% 构造滤波函数(用于NH06)
 % ****************************** 请同学们在此补全函数 *************************************
 % ********找到9个最佳滤波点位坐标，并把下列陷波滤波器函数参数中的“#”换成对应点位坐标********
 % ************例如，找到的点位坐标为x=1,y=2，则Hk = notch_filter(I_noisy,1,2);*************
-% H1 = notch_filter(I_noisy,#,#);
-% H2 = notch_filter(I_noisy,#,#);
-% H3 = notch_filter(I_noisy,#,#);
-% H4 = notch_filter(I_noisy,#,#);
-% H5 = notch_filter(I_noisy,#,#);
-% H6 = notch_filter(I_noisy,#,#);
-% H7 = notch_filter(I_noisy,#,#);
-% H8 = notch_filter(I_noisy,#,#);
-% H9 = notch_filter(I_noisy,#,#);
-% H = H1.*H2.*H3.*H4.*H5.*H6.*H7.*H8.*H9;
+H1 = notch_filter(I_noisy,-2,-40);
+H2 = notch_filter(I_noisy,19,-64);
+H3 = notch_filter(I_noisy,-8,-82);
+H4 = notch_filter(I_noisy,17,-103);
+H5 = notch_filter(I_noisy,-11,-112);
+H6 = notch_filter(I_noisy,12,-144);
+H7 = notch_filter(I_noisy,-26,-162);
+H8 = notch_filter(I_noisy,16,-185);
+H9 = notch_filter(I_noisy,8,-220);
+H = H1.*H2.*H3.*H4.*H5.*H6.*H7.*H8.*H9;
 
 %% 傅里叶逆变换
 frequency_I_denoised = frequency_I_noisy .* H;
@@ -66,15 +66,15 @@ logAmplitude_I_denoised = fftshift(logAmplitude_I_denoised);
 I_denoised = uint8(I_denoised);
 
 %% 显示图像及幅度谱
-% % 图像
-% subplot(2,3,1);imshow(I_noisy);title('噪声图像');
-% subplot(2,3,2);imshow(I);title('原图像');
-% subplot(2,3,3);imshow(I_denoised,[]);title('去噪图像');
+% 图像
+subplot(2,3,1);imshow(I_noisy);title('噪声图像');
+subplot(2,3,2);imshow(I);title('原图像');
+subplot(2,3,3);imshow(I_denoised,[]);title('去噪图像');
 % 
 % % 居中对数傅里叶谱
-% subplot(2,3,4);imshow(logAmplitude_I_noisy,[]);title('噪声图像居中对数傅里叶谱')
-% subplot(2,3,5);imshow(logAmplitude_I,[]);title('原图像居中对数傅里叶谱')
-% subplot(2,3,6);imshow(logAmplitude_I_denoised,[]);title('去噪图像居中对数傅里叶谱')
+subplot(2,3,4);imshow(logAmplitude_I_noisy,[]);title('噪声图像居中对数傅里叶谱')
+subplot(2,3,5);imshow(logAmplitude_I,[]);title('原图像居中对数傅里叶谱')
+subplot(2,3,6);imshow(logAmplitude_I_denoised,[]);title('去噪图像居中对数傅里叶谱')
 
 %% 蒙太奇方式显示图像及其对数幅度谱
 row1 = [I_noisy,I,I_denoised];

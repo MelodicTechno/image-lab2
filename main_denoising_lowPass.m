@@ -2,21 +2,21 @@ addpath("Data/")
 addpath("Utilities/")
 
 % 读取图像
-noisy_img = imread('09_noisy.png');
-GT_img = imread('09_GT.png');
+noisy_img = imread('15_noisy.png');
+GT_img = imread('15_GT.png');
 
 % 傅里叶变换并中心化
-F_noisy = fft2(double(noisy_img));
+F_noisy = fft2(im2uint8(noisy_img));
 F_noisy_shifted = fftshift(F_noisy);
 
 % 获取图像尺寸
-[M, N] = size(F_noisy_shifted);
+[M, N] = size(noisy_img);
 
-% 创建方形低通滤波器掩模
-cutoff = 150; % 截止频率
-[U, V] = meshgrid(1:N, 1:M);
-H = ((U - N/2).^2 + (V - M/2).^2) <= cutoff^2;
-
+% 创建圆形低通滤波器掩模
+% [M, N] = size(noisyImage);
+D0 = 138; % 截止频率，可以根据需要调整
+[u, v] = meshgrid(-floor(N/2):floor((N-1)/2), -floor(M/2):floor((M-1)/2));
+H = double(abs(3u) <= D0 & abs(v) <= D0); % 正方形低通滤波器函数
 % 应用滤波器
 G_noisy_shifted = F_noisy_shifted .* H;
 
