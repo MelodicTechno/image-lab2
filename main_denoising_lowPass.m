@@ -1,7 +1,5 @@
-% 请同学们在此编程，完成任务（一）：基于低通滤波器傅里叶变换的灰度图像去噪任务
-
-addpath("Data\")
-addpath("Utilities\")
+addpath("Data/")
+addpath("Utilities/")
 
 % 读取图像
 noisy_img = imread('09_noisy.png');
@@ -15,15 +13,9 @@ F_noisy_shifted = fftshift(F_noisy);
 [M, N] = size(F_noisy_shifted);
 
 % 创建方形低通滤波器掩模
-cutoff = 90; % 截止频率
-H = zeros(M, N);
-for u = 1:M
-    for v = 1:N
-        if (u - M/2)^2 + (v - N/2)^2 <= cutoff^2
-            H(u, v) = 1;
-        end
-    end
-end
+cutoff = 150; % 截止频率
+[U, V] = meshgrid(1:N, 1:M);
+H = ((U - N/2).^2 + (V - M/2).^2) <= cutoff^2;
 
 % 应用滤波器
 G_noisy_shifted = F_noisy_shifted .* H;
@@ -53,6 +45,10 @@ imshow(denoised_img, []);
 title('(c) 去噪图像');
 
 % 显示傅里叶谱
+% 计算原图像的傅里叶变换并中心化
+F_GT = fft2(double(GT_img));
+F_GT_shifted = fftshift(F_GT);
+
 subplot(2, 3, 4);
 imshow(log(1 + abs(F_noisy_shifted)), [], 'XData', [-N/2, N/2], 'YData', [-M/2, M/2]);
 title('(d) 噪声图像中心化对数傅里叶谱');
@@ -68,3 +64,26 @@ F_denoised_shifted = fftshift(F_denoised);
 subplot(2, 3, 6);
 imshow(log(1 + abs(F_denoised_shifted)), [], 'XData', [-N/2, N/2], 'YData', [-M/2, M/2]);
 title('(f) 去噪图像中心化对数傅里叶谱');
+
+% 计算噪声图像与原始图像之间的指标
+rmse_noisy = sqrt(mean((double(GT_img) - double(noisy_img)).^2, 'all'));
+mse_noisy = mean((double(GT_img) - double(noisy_img)).^2, 'all');
+psnr_noisy = 10 * log10((255^2) / mse_noisy);
+[ssim_noisy, ssim_map_noisy] = ssim(noisy_img, GT_img);
+
+% 计算去噪图像与原始图像之间的指标
+rmse_denoised = sqrt(mean((double(GT_img) - double(denoised_img)).^2, 'all'));
+mse_denoised = mean((double(GT_img) - double(denoised_img)).^2, 'all');
+psnr_denoised = 10 * log10((255^2) / mse_denoised);
+[ssim_denoised, ssim_map_denoised] = ssim(denoised_img, GT_img);
+
+% 显示结果
+fprintf('噪声图像与原始图像之间的指标：\n');
+fprintf('RMSE: %.4f\n', rmse_noisy);
+fprintf('PSNR: %.4f dB\n', psnr_noisy);
+fprintf('SSIM: %.4f\n', ssim_noisy);
+
+fprintf('去噪图像与原始图像之间的指标：\n');
+fprintf('RMSE: %.4f\n', rmse_denoised);
+fprintf('PSNR: %.4f dB\n', psnr_denoised);
+fprintf('SSIM: %.4f\n', ssim_denoised);
